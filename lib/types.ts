@@ -69,6 +69,7 @@ export interface AgentDoc {
   id: string;
   title: string;
   description?: string;
+  icon?: string;
   cells: Cell[];
   createdAt: Date;
   updatedAt: Date;

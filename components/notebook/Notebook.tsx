@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { useCells, useAgentStore } from "@/lib/store"
 import { Plus, Sparkles } from "lucide-react"
 import type { CellKind } from "@/lib/types"
@@ -30,13 +31,13 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
     <div style={{ 
       display: 'flex', 
       justifyContent: 'center', 
-      padding: '8px 0',
+      padding: '4px 0',
       position: 'relative'
     }}>
       <div style={{
         position: 'absolute',
-        left: '30%',
-        right: '30%',
+        left: '40%',
+        right: '40%',
         top: '50%',
         height: 1,
         background: '#E5E7EB',
@@ -46,9 +47,9 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
         style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 2,
-          padding: 2,
-          borderRadius: 6,
+          gap: 1,
+          padding: 1,
+          borderRadius: 4,
           background: '#FFFFFF',
           border: '1px solid #E5E7EB',
           position: 'relative',
@@ -60,26 +61,26 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 500,
-            padding: '4px 8px',
-            borderRadius: 4,
+            padding: '2px 6px',
+            borderRadius: 3,
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
-            color: '#6B7280'
+            color: '#9CA3AF'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#F1F5F9'
-            e.currentTarget.style.color = '#111827'
+            e.currentTarget.style.background = '#F9FAFB'
+            e.currentTarget.style.color = '#6B7280'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#6B7280'
+            e.currentTarget.style.color = '#9CA3AF'
           }}
         >
-          <Plus size={10} style={{ marginRight: 4 }} />
+          <Plus size={8} style={{ marginRight: 2 }} />
           Prompt
         </button>
         <button 
@@ -87,26 +88,26 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 500,
-            padding: '4px 8px',
-            borderRadius: 4,
+            padding: '2px 6px',
+            borderRadius: 3,
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
-            color: '#6B7280'
+            color: '#9CA3AF'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#F1F5F9'
-            e.currentTarget.style.color = '#111827'
+            e.currentTarget.style.background = '#F9FAFB'
+            e.currentTarget.style.color = '#6B7280'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#6B7280'
+            e.currentTarget.style.color = '#9CA3AF'
           }}
         >
-          <Plus size={10} style={{ marginRight: 4 }} />
+          <Plus size={8} style={{ marginRight: 2 }} />
           Connector
         </button>
         <button 
@@ -114,26 +115,26 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            fontSize: 11,
+            fontSize: 10,
             fontWeight: 500,
-            padding: '4px 8px',
-            borderRadius: 4,
+            padding: '2px 6px',
+            borderRadius: 3,
             border: 'none',
             background: 'transparent',
             cursor: 'pointer',
             transition: 'all 0.15s ease',
-            color: '#6B7280'
+            color: '#9CA3AF'
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#F1F5F9'
-            e.currentTarget.style.color = '#111827'
+            e.currentTarget.style.background = '#F9FAFB'
+            e.currentTarget.style.color = '#6B7280'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#6B7280'
+            e.currentTarget.style.color = '#9CA3AF'
           }}
         >
-          <Plus size={10} style={{ marginRight: 4 }} />
+          <Plus size={8} style={{ marginRight: 2 }} />
           Node
         </button>
       </div>
@@ -339,6 +340,20 @@ function CellPlaceholder({ cellId }: { cellId: string }) {
 export function Notebook() {
   const cells = useCells()
   const { addCell, selectCell, selectedCellId } = useAgentStore()
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  useEffect(() => {
+    // Prevent flash of empty state on reload
+    setIsLoaded(true)
+  }, [])
+
+  if (!isLoaded) {
+    return (
+      <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ color: '#9CA3AF', fontSize: 14 }}>Loading...</div>
+      </div>
+    )
+  }
 
   const handleAddCell = (kind: CellKind, atIndex?: number) => {
     addCell(kind, atIndex)
@@ -359,7 +374,15 @@ export function Notebook() {
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ flex: 1, overflow: 'auto' }}>
-        <div style={{ maxWidth: 920, margin: '0 auto', padding: 24 }}>
+          <div 
+            style={{ maxWidth: 920, margin: '0 auto', padding: 24 }}
+            onClick={(e) => {
+              // If clicking on empty space (not a cell), deselect
+              if (e.target === e.currentTarget) {
+                selectCell(null)
+              }
+            }}
+          >
           {/* Add cell button at the top */}
           <AddCellButton onAdd={(kind) => handleAddCell(kind, 0)} />
 

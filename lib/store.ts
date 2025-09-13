@@ -73,7 +73,7 @@ export const useAgentStore = create<AgentStore>()(
       document: createEmptyDocument(),
       selectedCellId: null,
       isGraphViewOpen: false,
-      leftPanelCollapsed: false,
+      leftPanelCollapsed: true,
       rightPanelCollapsed: false,
 
       // Cell operations

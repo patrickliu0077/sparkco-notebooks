@@ -49,15 +49,17 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
       style={{
         padding: 12,
         borderRadius: 4,
-        border: `2px solid ${isSelected ? '#111827' : 'transparent'}`,
-        background: isSelected ? 'linear-gradient(135deg,#F8FAFC 0%,#EEF2F7 100%)' : '#FFFFFF',
-        transition: 'all .2s ease',
+        border: `1px solid ${isSelected ? '#8B5CF6' : '#E5E7EB'}`,
+        background: '#FFFFFF',
+        transition: 'all .15s ease',
         boxShadow: isSelected
-          ? '0 8px 24px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.05)'
-          : '0 2px 8px rgba(0,0,0,.03), 0 1px 2px rgba(0,0,0,.02)',
+          ? '0 0 0 3px rgba(139, 92, 246, 0.1)'
+          : 'none',
         cursor: 'pointer',
       }}
     >
+
+      
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
         <div
@@ -80,22 +82,22 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
           </div>
         </div>
         {cell.tags && cell.tags.length > 0 ? (
-          <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
             {cell.tags.slice(0, 2).map((tag) => (
               <span
                 key={tag}
                 style={{
-                  fontSize: 10,
-                  padding: '1px 4px',
-                  borderRadius: 3,
+                  fontSize: 9,
+                  padding: '1px 3px',
+                  borderRadius: 2,
                   border: '1px solid #E5E7EB',
-                  background: '#F9FAFB',
+                  background: '#FFFFFF',
                   color: '#6B7280',
-                  fontFamily:
-                    'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+                  fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+                  textTransform: 'lowercase'
                 }}
               >
-                {tag}
+                {tag.toLowerCase()}
               </span>
             ))}
           </div>

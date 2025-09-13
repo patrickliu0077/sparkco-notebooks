@@ -170,52 +170,50 @@ function PaletteItemCard({ item, onDragStart }: PaletteItemCardProps) {
       draggable
       onDragStart={() => onDragStart(item)}
       style={{
-        padding: '12px',
-        borderRadius: '8px',
+        padding: '8px',
+        borderRadius: '6px',
         border: '1px solid #E5E7EB',
         backgroundColor: '#FFFFFF',
         cursor: 'grab',
-        transition: 'all 0.2s',
-        marginBottom: '8px'
+        transition: 'all 0.15s',
+        marginBottom: '6px'
       }}
       onMouseEnter={(e) => {
-        e.currentTarget.style.backgroundColor = '#F8FAFC'
+        e.currentTarget.style.backgroundColor = '#F9FAFB'
         e.currentTarget.style.borderColor = '#E5E7EB'
-        e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.06)'
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.backgroundColor = '#FFFFFF'
         e.currentTarget.style.borderColor = '#E5E7EB'
-        e.currentTarget.style.boxShadow = 'none'
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '8px' }}>
         <div style={{
-          width: '32px',
-          height: '32px',
-          borderRadius: '6px',
+          width: '24px',
+          height: '24px',
+          borderRadius: '4px',
           backgroundColor: '#F1F5F9',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           flexShrink: 0
         }}>
-          <IconComponent size={16} color="#111827" />
+          <IconComponent size={14} color="#111827" />
         </div>
         <div style={{ flex: 1, minWidth: 0 }}>
           <h4 style={{
             fontWeight: 500,
-            fontSize: '14px',
-            color: '#0F172A',
-            margin: '0 0 4px 0'
+            fontSize: '13px',
+            color: '#374151',
+            margin: '0 0 2px 0'
           }}>
             {item.label}
           </h4>
           <p style={{
-            fontSize: '12px',
-            color: '#475569',
+            fontSize: '11px',
+            color: '#6B7280',
             margin: 0,
-            lineHeight: 1.4
+            lineHeight: 1.3
           }}>
             {item.description}
           </p>
@@ -258,35 +256,20 @@ export function LeftPalette() {
         alignItems: 'center',
         paddingTop: '12px',
         gap: '4px',
-        position: 'relative'
+        position: 'relative',
+        borderTopRightRadius: '8px',
+        borderBottomRightRadius: '8px'
       }}>
-        <button
-          onClick={() => {
-            const { toggleLeftPanel } = useAgentStore.getState()
-            toggleLeftPanel()
-          }}
-          style={{
-            position: 'absolute',
-            top: '140px',
-            right: '6px',
-            padding: '4px 6px',
-            background: 'transparent',
-            border: '1px solid #E5E7EB',
-            cursor: 'pointer',
-            borderRadius: '4px',
-            color: '#6B7280',
-            fontSize: '16px',
-            lineHeight: 1,
-            fontWeight: 400
-          }}
-          title="Expand panel"
-        >
-          ›
-        </button>
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
+            onClick={() => {
+              setActiveTab(tab.id)
+              const { toggleLeftPanel } = useAgentStore.getState()
+              if (leftPanelCollapsed) {
+                toggleLeftPanel()
+              }
+            }}
             style={{
               width: '36px',
               height: '36px',
@@ -464,6 +447,82 @@ export function LeftPalette() {
             <p style={{ fontSize: '14px' }}>No components found</p>
           </div>
         )}
+      </div>
+
+      {/* User Info Section */}
+      <div style={{
+        borderTop: '1px solid #E5E7EB',
+        padding: '12px 16px',
+        background: '#F9FAFB'
+      }}>
+        <div style={{ marginBottom: 6 }}>
+          <input
+            defaultValue="John Doe"
+            style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: '#111827',
+              background: 'transparent',
+              border: 'none',
+              outline: 'none',
+              padding: '2px 0',
+              width: '100%',
+              fontFamily: 'Inter, system-ui, sans-serif'
+            }}
+            onFocus={(e) => {
+              e.target.style.background = '#FFFFFF'
+              e.target.style.borderRadius = '4px'
+              e.target.style.padding = '2px 6px'
+            }}
+            onBlur={(e) => {
+              e.target.style.background = 'transparent'
+              e.target.style.padding = '2px 0'
+            }}
+          />
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{
+            fontSize: 10,
+            color: '#6B7280',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 500
+          }}>
+            Plan
+          </span>
+          <span style={{
+            fontSize: 10,
+            padding: '2px 6px',
+            borderRadius: 3,
+            background: '#DBEAFE',
+            color: '#1E40AF',
+            fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+            textTransform: 'lowercase',
+            fontWeight: 500
+          }}>
+            pro
+          </span>
+        </div>
+        
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <span style={{
+            fontSize: 10,
+            color: '#6B7280',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 500
+          }}>
+            Agents
+          </span>
+          <span style={{
+            fontSize: 10,
+            color: '#9CA3AF',
+            fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace'
+          }}>
+            12
+          </span>
+        </div>
       </div>
     </div>
   )

@@ -76,13 +76,13 @@ function Field({
   description?: string
 }) {
   return (
-    <div style={{ marginBottom: 14 }}>
-      <label style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#0F172A', marginBottom: 6 }}>
+    <div style={{ marginBottom: 16, paddingBottom: 12, borderBottom: '1px solid #F3F4F6' }}>
+      <label style={{ display: 'block', fontSize: 11, fontWeight: 500, color: '#6B7280', marginBottom: 6, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
         {label}
       </label>
       {children}
       {description ? (
-        <div style={{ marginTop: 6, fontSize: 12, color: '#64748B' }}>{description}</div>
+        <div style={{ marginTop: 4, fontSize: 11, color: '#9CA3AF' }}>{description}</div>
       ) : null}
     </div>
   )

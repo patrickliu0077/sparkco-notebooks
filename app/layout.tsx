@@ -3,8 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { TopNav } from "@/components/shell/TopNav";
 import { LeftPalette } from "@/components/shell/LeftPalette";
-import { RightInspector } from "@/components/shell/RightInspector";
 import { ChatBar } from "@/components/shell/ChatBar";
+import { RightInspectorConditional } from "@/components/shell/RightInspectorConditional";
+import { FlameEffect } from "@/components/shell/FlameEffect";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,16 +22,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className} style={{ margin: 0, padding: '8px', height: '100vh', overflow: 'hidden' }}>
-        <div style={{ height: 'calc(100vh - 16px)', display: 'flex', flexDirection: 'column', backgroundColor: '#F5F5F5', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0, 0, 0, 0.08)' }}>
+        <div style={{ height: 'calc(100vh - 16px)', display: 'flex', flexDirection: 'column', backgroundColor: '#FAFAFA', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 24px rgba(0, 0, 0, 0.08)' }}>
           <TopNav />
           <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
             <LeftPalette />
-            <main style={{ flex: 1, overflow: 'auto', backgroundColor: '#F5F5F5' }}>
+            <main style={{ flex: 1, overflow: 'auto', backgroundColor: '#FAFAFA' }}>
               {children}
             </main>
-            <RightInspector />
+            <RightInspectorConditional />
           </div>
           <ChatBar />
+          <FlameEffect />
         </div>
       </body>
     </html>

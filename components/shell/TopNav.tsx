@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { useAgentStore, useDocument } from "@/lib/store"
 import { downloadJSON } from "@/lib/utils"
@@ -9,18 +10,42 @@ import {
   GitBranch, 
   Sparkles,
   Menu,
-  X
+  X,
+  Zap,
+  Bot,
+  Rocket,
+  Target,
+  Crown,
+  Diamond,
+  Star,
+  ChevronDown
 } from "lucide-react"
 
 export function TopNav() {
   const document = useDocument()
+  const [showIconPicker, setShowIconPicker] = useState(false)
   const { 
     toggleGraphView, 
     toggleLeftPanel, 
     leftPanelCollapsed,
     isGraphViewOpen,
-    exportDocument 
+    exportDocument,
+    updateDocument
   } = useAgentStore()
+
+  const iconOptions = [
+    { icon: Sparkles, name: 'Sparkles' },
+    { icon: Zap, name: 'Zap' },
+    { icon: Bot, name: 'Bot' },
+    { icon: Rocket, name: 'Rocket' },
+    { icon: Target, name: 'Target' },
+    { icon: Crown, name: 'Crown' },
+    { icon: Diamond, name: 'Diamond' },
+    { icon: Star, name: 'Star' }
+  ]
+
+  const currentIcon = document.icon || 'Sparkles'
+  const CurrentIconComponent = iconOptions.find(opt => opt.name === currentIcon)?.icon || Sparkles
 
   const handleExport = () => {
     const json = exportDocument()
@@ -68,51 +93,118 @@ export function TopNav() {
           </button>
           
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '8px',
-              background: '#F1F5F9',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}>
-              <Sparkles size={16} color="#111827" />
+            <div 
+              onClick={() => setShowIconPicker(!showIconPicker)}
+              style={{
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: '#F8FAFC',
+                border: '1px solid rgba(229, 231, 235, 0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                cursor: 'pointer',
+                position: 'relative'
+              }}
+            >
+              <CurrentIconComponent size={16} color="#111827" />
+              <ChevronDown size={10} color="#6B7280" style={{ position: 'absolute', bottom: 2, right: 2 }} />
+              
+              {showIconPicker && (
+                <div style={{
+                  position: 'absolute',
+                  top: '100%',
+                  left: 0,
+                  marginTop: 4,
+                  background: '#FFFFFF',
+                  border: '1px solid #E5E7EB',
+                  borderRadius: 8,
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                  padding: 8,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  zIndex: 1000
+                }}>
+                  {iconOptions.map((option) => (
+                    <button
+                      key={option.name}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        updateDocument({ icon: option.name })
+                        setShowIconPicker(false)
+                      }}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '6px 8px',
+                        borderRadius: 4,
+                        border: 'none',
+                        background: currentIcon === option.name ? '#F1F5F9' : 'transparent',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        fontWeight: 500,
+                        color: '#111827'
+                      }}
+                    >
+                      <option.icon size={14} />
+                      {option.name}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
             <div>
-              <input
-                value={document.title}
-                onChange={(e) => {
-                  const { updateDocument } = useAgentStore.getState()
-                  updateDocument({ title: e.target.value })
-                }}
-                style={{
-                  fontWeight: 600,
-                  color: '#0F172A',
-                  fontSize: '18px',
-                  margin: 0,
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none',
-                  padding: '2px 0',
-                  width: '200px'
-                }}
-                onFocus={(e) => {
-                  e.target.style.background = '#F9FAFB'
-                  e.target.style.borderRadius = '4px'
-                  e.target.style.padding = '2px 6px'
-                }}
-                onBlur={(e) => {
-                  e.target.style.background = 'transparent'
-                  e.target.style.padding = '2px 0'
-                }}
-              />
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 2 }}>
+                <input
+                  value={document.title}
+                  onChange={(e) => {
+                    const { updateDocument } = useAgentStore.getState()
+                    updateDocument({ title: e.target.value })
+                  }}
+                  style={{
+                    fontWeight: 500,
+                    color: '#111827',
+                    fontSize: '16px',
+                    margin: 0,
+                    background: 'transparent',
+                    border: 'none',
+                    outline: 'none',
+                    padding: '2px 0',
+                    width: '180px',
+                    fontFamily: 'Inter, system-ui, sans-serif'
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.background = '#F9FAFB'
+                    e.target.style.borderRadius = '4px'
+                    e.target.style.padding = '2px 6px'
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.background = 'transparent'
+                    e.target.style.padding = '2px 0'
+                  }}
+                />
+                <span style={{
+                  fontSize: 10,
+                  padding: '2px 6px',
+                  borderRadius: 4,
+                  background: '#F3F4F6',
+                  color: '#6B7280',
+                  fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+                  textTransform: 'lowercase'
+                }}>
+                  draft
+                </span>
+              </div>
               <p style={{
                 fontSize: '12px',
-                color: '#475569',
-                margin: 0
+                color: '#9CA3AF',
+                margin: 0,
+                fontFamily: 'Inter, system-ui, sans-serif'
               }}>
-                {document.cells.length} cells
+                {document.cells.length} cells · last edited just now
               </p>
             </div>
           </div>
