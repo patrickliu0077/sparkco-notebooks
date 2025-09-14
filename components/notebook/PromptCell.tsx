@@ -5,7 +5,7 @@ import StarterKit from '@tiptap/starter-kit'
 import Placeholder from '@tiptap/extension-placeholder'
 import { useEffect, useState } from 'react'
 import { useAgentStore } from '@/lib/store'
-import { MessageCircle, Play, Monitor, X, Minimize2, ExternalLink, Cloud, Loader2 } from 'lucide-react'
+import { MessageCircle, Play, Monitor, X, Minimize2, ExternalLink, Cloud, Loader2, BookOpen } from 'lucide-react'
 import type { PromptCell as PromptCellType } from '@/lib/types'
 
 interface PromptCellProps {
@@ -25,6 +25,8 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
   const [isDeploying, setIsDeploying] = useState(false)
   const [deploymentResult, setDeploymentResult] = useState<any>(null)
   const [deploymentCode, setDeploymentCode] = useState<string>('')
+  const [isGeneratingInkeep, setIsGeneratingInkeep] = useState(false)
+  const [inkeepResult, setInkeepResult] = useState<any>(null)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -312,6 +314,110 @@ export class AgentDurableObject {
     }
   }
 
+  const handleGenerateInkeep = async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setIsGeneratingInkeep(true)
+    setInkeepResult(null)
+    
+    try {
+      // Simulate Inkeep agent generation
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Generate Inkeep configuration based on the prompt content
+      const inkeepConfig = {
+        apiKey: `ink_${Math.random().toString(36).substring(2, 15)}`,
+        organizationId: `org_${Math.random().toString(36).substring(2, 15)}`,
+        integrationId: `int_${Math.random().toString(36).substring(2, 15)}`,
+        baseSettings: {
+          name: cell.name || 'AI Assistant',
+          primaryBrandColor: '#8B5CF6',
+          description: cell.content.substring(0, 100) + '...',
+          chatSettings: {
+            placeholder: 'Ask me anything...',
+            quickQuestions: [
+              'How can I help you today?',
+              'What would you like to know?',
+              'Tell me about your project'
+            ]
+          },
+          searchSettings: {
+            enabled: true,
+            placeholder: 'Search documentation...'
+          }
+        },
+        sources: [
+          {
+            type: 'documentation',
+            url: 'https://docs.example.com',
+            crawlInterval: 'daily'
+          },
+          {
+            type: 'github',
+            repo: 'your-org/your-repo',
+            branch: 'main'
+          }
+        ],
+        embeddingCode: `<!-- Inkeep Chat Widget -->
+<script>
+  (function() {
+    const script = document.createElement('script');
+    script.src = 'https://unpkg.com/@inkeep/widgets-embed@latest/dist/embed.js';
+    script.type = 'module';
+    script.defer = true;
+    document.head.appendChild(script);
+    
+    script.onload = function() {
+      Inkeep.embed({
+        componentType: 'ChatButton',
+        properties: {
+          chatButtonType: 'PILL',
+          baseSettings: {
+            apiKey: '${`ink_${Math.random().toString(36).substring(2, 15)}`}',
+            integrationId: '${`int_${Math.random().toString(36).substring(2, 15)}`}',
+            organizationId: '${`org_${Math.random().toString(36).substring(2, 15)}`}',
+            primaryBrandColor: '#8B5CF6',
+            organizationDisplayName: '${cell.name || 'Your Organization'}',
+          },
+          modalSettings: {
+            promptSuggestions: [
+              '${cell.content.substring(0, 50)}...',
+              'How does this work?',
+              'Tell me more about the features'
+            ]
+          },
+          searchSettings: {
+            enabled: true,
+            placeholder: 'Search for answers...'
+          },
+          aiChatSettings: {
+            chatSubjectName: '${cell.name || 'AI Assistant'}',
+            botAvatarSrcUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=${cell.id}',
+            quickQuestions: [
+              'What can you help me with?',
+              'How do I get started?',
+              'Tell me about the documentation'
+            ]
+          }
+        }
+      });
+    };
+  })();
+</script>`
+      }
+      
+      setInkeepResult(inkeepConfig)
+      console.log('Inkeep agent generated:', inkeepConfig)
+      
+    } catch (error) {
+      console.error('Failed to generate Inkeep agent:', error)
+      setInkeepResult({
+        error: error instanceof Error ? error.message : 'Generation failed'
+      })
+    } finally {
+      setIsGeneratingInkeep(false)
+    }
+  }
+
   return (
     <div style={{ display: 'flex', gap: 12, alignItems: 'flex-start' }}>
       {/* Main Cell Content */}
@@ -340,7 +446,7 @@ export class AgentDurableObject {
                 position: 'absolute',
                 top: '50%',
                 right: -12,
-                transform: 'translateY(-50%) translateY(-14px)',
+                transform: 'translateY(-50%) translateY(-42px)',
                 zIndex: 10,
                 opacity: isSelected ? 1 : 0,
                 transition: 'opacity 0.2s ease',
@@ -402,13 +508,81 @@ export class AgentDurableObject {
               </button>
             </div>
             
+            {/* Inkeep Agent Button - Between Deploy and Computer Use */}
+            <div
+              style={{
+                position: 'absolute',
+                top: '50%',
+                right: -12,
+                transform: 'translateY(-50%)',
+                zIndex: 10,
+                opacity: isSelected ? 1 : 0,
+                transition: 'opacity 0.2s ease',
+                pointerEvents: isSelected ? 'auto' : 'none'
+              }}
+            >
+              <button
+                onClick={handleGenerateInkeep}
+                disabled={isGeneratingInkeep}
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: '50%',
+                  border: '1px solid #E5E7EB',
+                  background: '#FFFFFF',
+                  color: isGeneratingInkeep ? '#9CA3AF' : '#8B5CF6',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: isGeneratingInkeep ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.15s ease',
+                  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                  position: 'relative'
+                }}
+                onMouseEnter={(e) => {
+                  if (!isGeneratingInkeep) {
+                    e.currentTarget.style.transform = 'scale(1.1)'
+                    e.currentTarget.style.boxShadow = '0 2px 6px rgba(0, 0, 0, 0.15)'
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'
+                  e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)'
+                }}
+              >
+                {isGeneratingInkeep ? <Loader2 size={10} className="animate-spin" /> : <BookOpen size={10} />}
+                {/* Tooltip */}
+                <span style={{
+                  position: 'absolute',
+                  right: 30,
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: '#1F2937',
+                  color: '#FFFFFF',
+                  fontSize: 9,
+                  padding: '4px 8px',
+                  borderRadius: 4,
+                  whiteSpace: 'nowrap',
+                  opacity: 0,
+                  pointerEvents: 'none',
+                  transition: 'opacity 0.2s ease',
+                  fontWeight: 500
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.opacity = '1' }}
+                className="tooltip"
+                >
+                  {isGeneratingInkeep ? 'Generating...' : 'Generate Inkeep Agent'}
+                </span>
+              </button>
+            </div>
+            
             {/* Computer Use Button */}
             <div
               style={{
                 position: 'absolute',
                 top: '50%',
                 right: -12,
-                transform: 'translateY(-50%) translateY(14px)',
+                transform: 'translateY(-50%) translateY(42px)',
                 zIndex: 10,
                 opacity: isSelected ? 1 : 0,
                 transition: 'opacity 0.2s ease',
@@ -596,6 +770,138 @@ export class AgentDurableObject {
             }}>
               {deploymentCode}
             </div>
+          </div>
+        )}
+
+        {/* Inkeep Result */}
+        {inkeepResult && !isGeneratingInkeep && (
+          <div style={{
+            marginTop: 12,
+            padding: 10,
+            borderRadius: 6,
+            background: inkeepResult.error ? '#FEF2F2' : '#F5F3FF',
+            border: `1px solid ${inkeepResult.error ? '#FECACA' : '#DDD6FE'}`
+          }}>
+            {inkeepResult.error ? (
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#DC2626',
+                  marginBottom: 4
+                }}>
+                  Inkeep Generation Failed
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: '#7F1D1D'
+                }}>
+                  {inkeepResult.error}
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  color: '#6B21A8',
+                  marginBottom: 6
+                }}>
+                  📚 Inkeep Agent Generated!
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: '#581C87',
+                  marginBottom: 4
+                }}>
+                  API Key: <code style={{ 
+                    background: '#F3F4F6', 
+                    padding: '2px 4px', 
+                    borderRadius: 2,
+                    fontSize: 9
+                  }}>{inkeepResult.apiKey}</code>
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: '#581C87',
+                  marginBottom: 4
+                }}>
+                  Organization ID: <code style={{ 
+                    background: '#F3F4F6', 
+                    padding: '2px 4px', 
+                    borderRadius: 2,
+                    fontSize: 9
+                  }}>{inkeepResult.organizationId}</code>
+                </div>
+                <div style={{
+                  fontSize: 10,
+                  color: '#581C87',
+                  marginBottom: 8
+                }}>
+                  Integration ID: <code style={{ 
+                    background: '#F3F4F6', 
+                    padding: '2px 4px', 
+                    borderRadius: 2,
+                    fontSize: 9
+                  }}>{inkeepResult.integrationId}</code>
+                </div>
+                
+                <details style={{ marginTop: 8 }}>
+                  <summary style={{
+                    fontSize: 10,
+                    color: '#6B21A8',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    marginBottom: 4
+                  }}>
+                    View Embedding Code
+                  </summary>
+                  <div style={{
+                    fontSize: 8,
+                    color: '#374151',
+                    background: '#FFFFFF',
+                    padding: 8,
+                    borderRadius: 4,
+                    fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+                    whiteSpace: 'pre-wrap',
+                    wordBreak: 'break-all',
+                    maxHeight: 150,
+                    overflowY: 'auto',
+                    border: '1px solid #E5E7EB',
+                    marginTop: 4
+                  }}>
+                    {inkeepResult.embeddingCode}
+                  </div>
+                </details>
+                
+                <div style={{
+                  marginTop: 8,
+                  padding: 6,
+                  background: '#FFFFFF',
+                  borderRadius: 4,
+                  border: '1px solid #E5E7EB'
+                }}>
+                  <div style={{
+                    fontSize: 9,
+                    fontWeight: 600,
+                    color: '#374151',
+                    marginBottom: 4
+                  }}>
+                    Quick Start:
+                  </div>
+                  <ol style={{
+                    fontSize: 9,
+                    color: '#6B7280',
+                    marginLeft: 16,
+                    marginBottom: 0
+                  }}>
+                    <li>Copy the embedding code above</li>
+                    <li>Add it to your website's HTML</li>
+                    <li>Configure sources in Inkeep dashboard</li>
+                  </ol>
+                </div>
+              </div>
+            )}
           </div>
         )}
 

@@ -36,7 +36,7 @@ async function createSession(params: any) {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      projectId: '19fa1c5f-87e2-4694-9230-d14adc06a872',
+      projectId: BROWSERBASE_CONFIG.PROJECT_ID,
       browserSettings: {
         viewport: { width: 1280, height: 720 },
         ...params.browserSettings

@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
-// Cloudflare API configuration - Use environment variables or hardcode
-const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || '96265b092646454a258661dcff41d13c'
-const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || 'DrbKu6nlg5-7DnpEoPIsT05bhfPM1OqspzgHD7oN'
-const OPENAI_API_KEY = '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'
+// Cloudflare API configuration - Use environment variables
+const CLOUDFLARE_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || ''
+const CLOUDFLARE_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || ''
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 
 export async function POST(request: NextRequest) {
   try {

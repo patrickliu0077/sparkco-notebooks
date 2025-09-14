@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { Stagehand } from '@browserbasehq/stagehand'
 
-// API Keys
-const BROWSERBASE_API_KEY = 'bb_live_pB2bcc9beJx_y4WRu9zqTiZmo3U'
-const BROWSERBASE_PROJECT_ID = '19fa1c5f-87e2-4694-9230-d14adc06a872'
-const OPENAI_API_KEY = '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'
+// API Keys from environment variables
+const BROWSERBASE_API_KEY = process.env.BROWSERBASE_API_KEY || ''
+const BROWSERBASE_PROJECT_ID = process.env.BROWSERBASE_PROJECT_ID || ''
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY || ''
 
 // Store for execution logs (in production, use a proper database or Redis)
 const executionLogs = new Map<string, any[]>()
@@ -56,6 +56,7 @@ async function executeTask(params: { sessionId: string, instructions: string }) 
     // Initialize Stagehand with Browserbase (simplified config based on docs)
     const stagehand = new Stagehand({
       env: "BROWSERBASE",
+      apiKey: OPENAI_API_KEY,
       // Enable verbose logging to capture actions
       verbose: 2
     });

@@ -87,7 +87,11 @@ const nodeIcons = {
   memory: Database,
   retrieve: Search,
   output: ArrowRight,
-  input: ArrowRight
+  input: ArrowRight,
+  payment: Settings,
+  'agent-call': Zap,
+  escrow: Database,
+  validate: Settings
 }
 
 // Small UI primitives (inline styles to avoid Tailwind custom token issues)

@@ -3,10 +3,10 @@
 
 export const COMPOSIO_CONFIG = {
   // Your Composio API key - stored securely on backend
-  API_KEY: 'ak_NVhcTNsYirgh4wv-cYpr',
+  API_KEY: process.env.COMPOSIO_API_KEY || '',
   
   // Base URL for Composio API
-  BASE_URL: 'https://backend.composio.dev/api/v1',
+  BASE_URL: process.env.COMPOSIO_BASE_URL || 'https://backend.composio.dev/api/v1',
   
   // Supported integrations that use Composio
   COMPOSIO_CONNECTORS: [

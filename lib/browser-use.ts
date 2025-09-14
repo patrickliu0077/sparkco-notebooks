@@ -1,9 +1,8 @@
 // Browser Use Cloud API Integration
-// API Key: bu_A1fa8JQxqE2VnzPOVdU1nCLJt5zronxtRdkh5eITMqY
 
 export const BROWSER_USE_CONFIG = {
-  API_KEY: 'bu_A1fa8JQxqE2VnzPOVdU1nCLJt5zronxtRdkh5eITMqY',
-  BASE_URL: 'https://api.browser-use.com/api/v2',
+  API_KEY: process.env.BROWSER_USE_API_KEY || '',
+  BASE_URL: process.env.BROWSER_USE_BASE_URL || 'https://api.browser-use.com/api/v2',
 }
 
 export interface BrowserTask {
