@@ -214,7 +214,31 @@ export function TopNav() {
         </div>
 
         {/* Right section */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Email */}
+          <a
+            href="mailto:patrick@sparkco.ai"
+            style={{
+              fontSize: '13px',
+              color: '#6B7280',
+              textDecoration: 'none',
+              fontWeight: 500,
+              padding: '6px 12px',
+              borderRadius: '6px',
+              transition: 'all 0.15s ease'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = '#F9FAFB'
+              e.currentTarget.style.color = '#111827'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'transparent'
+              e.currentTarget.style.color = '#6B7280'
+            }}
+          >
+            patrick@sparkco.ai
+          </a>
+          
           {pathname === '/interact' ? (
             <button
               onClick={() => {

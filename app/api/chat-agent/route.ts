@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
 const openai = new OpenAI({
-  apiKey: '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'
+  apiKey: process.env.OPENAI_API_KEY
 })
 
 // Define the tools for notebook manipulation

@@ -1,10 +1,9 @@
 // Browserbase Integration
-// API Key: bb_live_pB2bcc9beJx_y4WRu9zqTiZmo3U
 
 export const BROWSERBASE_CONFIG = {
-  API_KEY: 'bb_live_pB2bcc9beJx_y4WRu9zqTiZmo3U',
-  BASE_URL: 'https://www.browserbase.com/v1',
-  PROJECT_ID: '19fa1c5f-87e2-4694-9230-d14adc06a872'
+  API_KEY: process.env.BROWSERBASE_API_KEY || '',
+  BASE_URL: process.env.BROWSERBASE_BASE_URL || 'https://www.browserbase.com/v1',
+  PROJECT_ID: process.env.BROWSERBASE_PROJECT_ID || ''
 }
 
 export interface BrowserbaseSession {

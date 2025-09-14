@@ -307,8 +307,32 @@ export function Notebook() {
 
   if (cells.length === 0) {
     return (
-      <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-        <div style={{ flex: 1, overflow: 'auto' }}>
+      <div style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        {/* SPARKCO - Extra Italic Orange Text at Bottom */}
+        <div style={{
+          position: 'fixed',
+          bottom: 80,
+          left: '50%',
+          transform: 'translateX(-50%) skewX(-20deg)',
+          width: '920px',
+          textAlign: 'center',
+          fontSize: '140px',
+          fontFamily: 'Fira Code, monospace',
+          fontWeight: 800,
+          fontStyle: 'italic',
+          color: 'rgba(251, 146, 60, 0.4)',
+          letterSpacing: '-0.05em',
+          textTransform: 'uppercase',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          zIndex: 0,
+          whiteSpace: 'nowrap',
+          textShadow: '0 0 30px rgba(251, 146, 60, 0.1)'
+        }}>
+          SPARKCO
+        </div>
+        
+        <div style={{ flex: 1, overflow: 'auto', position: 'relative', zIndex: 1 }}>
           <div style={{ maxWidth: 920, margin: '0 auto', padding: '8px 24px' }}>
             <EmptyState />
           </div>
@@ -323,8 +347,32 @@ export function Notebook() {
   const nodeCells = cells.filter(cell => cell.kind === 'node')
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, overflow: 'auto', paddingBottom: '280px' }}>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      {/* SPARKCO - Extra Italic Orange Text at Bottom */}
+      <div style={{
+        position: 'fixed',
+        bottom: 80,
+        left: '50%',
+        transform: 'translateX(-50%) skewX(-20deg)',
+        width: '920px',
+        textAlign: 'center',
+        fontSize: '140px',
+        fontFamily: 'Fira Code, monospace',
+        fontWeight: 800,
+        fontStyle: 'italic',
+        color: 'rgba(251, 146, 60, 0.4)',
+        letterSpacing: '-0.05em',
+        textTransform: 'uppercase',
+        pointerEvents: 'none',
+        userSelect: 'none',
+        zIndex: 0,
+        whiteSpace: 'nowrap',
+        textShadow: '0 0 30px rgba(251, 146, 60, 0.1)'
+      }}>
+        SPARKCO
+      </div>
+      
+      <div style={{ flex: 1, overflow: 'auto', paddingBottom: '280px', position: 'relative', zIndex: 1 }}>
         <div 
           style={{ maxWidth: 920, margin: '0 auto', padding: 24 }}
           onClick={(e) => {
