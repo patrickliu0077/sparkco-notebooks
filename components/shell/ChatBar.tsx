@@ -2,7 +2,16 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { Send, GripHorizontal } from 'lucide-react'
+import { Send, GripHorizontal, Loader2 } from 'lucide-react'
+import { useAgentStore } from '@/lib/store'
+
+interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+  timestamp: Date
+  actions?: any[]
+  toolCalls?: any[]
+}
 
 export function ChatBar() {
   const pathname = usePathname()
@@ -11,6 +20,7 @@ export function ChatBar() {
   if (pathname === '/interact') {
     return null
   }
+  
   const [message, setMessage] = useState('')
   const [width, setWidth] = useState(600)
   const [position, setPosition] = useState({ x: 561.5, y: 20 })
@@ -19,11 +29,157 @@ export function ChatBar() {
   const [isFocused, setIsFocused] = useState(false)
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 })
   const [resizeStart, setResizeStart] = useState({ mouseX: 0, initialWidth: 0, initialX: 0 })
+  const [isLoading, setIsLoading] = useState(false)
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([])
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  // Get store actions and state
+  const { addCell, updateCell, deleteCell, document } = useAgentStore()
+  const cells = document.cells
 
-  const handleSend = () => {
-    if (message.trim()) {
-      console.log('Sending message:', message)
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  useEffect(() => {
+    scrollToBottom()
+  }, [chatHistory, isFocused])
+
+  const typewriterEffect = async (text: string, callback: (partial: string) => void, speed: number = 30) => {
+    let currentText = ''
+    for (let i = 0; i < text.length; i++) {
+      currentText += text[i]
+      callback(currentText)
+      await new Promise(resolve => setTimeout(resolve, speed))
+    }
+  }
+
+  const executeActionsWithTypewriter = async (actions: any[]) => {
+    for (const action of actions) {
+      switch (action.type) {
+        case 'ADD_CELL':
+          // For prompt cells with content, add with typewriter effect
+          if (action.kind === 'prompt' && action.data.content) {
+            const originalContent = action.data.content
+            // First add the cell with empty content
+            addCell(action.kind, action.atIndex, { ...action.data, content: '' })
+            
+            // Get the newly added cell
+            const newCells = useAgentStore.getState().document.cells
+            const newCell = newCells[action.atIndex !== undefined ? action.atIndex : newCells.length - 1]
+            
+            // Stream the content with typewriter effect
+            await typewriterEffect(originalContent, (partial) => {
+              updateCell(newCell.id, { content: partial })
+            })
+          } else {
+            addCell(action.kind, action.atIndex, action.data)
+          }
+          break
+          
+        case 'UPDATE_CELL':
+          // If updating content, use typewriter effect
+          if (action.updates.content) {
+            const originalContent = action.updates.content
+            // First clear the content
+            updateCell(action.cellId, { ...action.updates, content: '' })
+            
+            // Stream the new content
+            await typewriterEffect(originalContent, (partial) => {
+              updateCell(action.cellId, { content: partial })
+            })
+          } else {
+            updateCell(action.cellId, action.updates)
+          }
+          break
+          
+        case 'DELETE_CELL':
+          // Add a small delay for visual effect
+          await new Promise(resolve => setTimeout(resolve, 200))
+          deleteCell(action.cellId)
+          break
+          
+        case 'CLEAR_ALL':
+          // Clear all cells with a staggered effect
+          const cellsToDelete = [...cells]
+          for (const cell of cellsToDelete) {
+            deleteCell(cell.id)
+            await new Promise(resolve => setTimeout(resolve, 100))
+          }
+          break
+          
+        case 'RUN_BLOCK':
+          // This would trigger the run action on the specific block
+          console.log('Run block:', action.cellId, action.action)
+          break
+      }
+      
+      // Add a small delay between actions for visual clarity
+      await new Promise(resolve => setTimeout(resolve, 300))
+    }
+  }
+
+  const handleSend = async () => {
+    if (message.trim() && !isLoading) {
+      const userMessage = message.trim()
       setMessage('')
+      setIsLoading(true)
+      
+      // Add user message to history
+      const newUserMessage: ChatMessage = {
+        role: 'user',
+        content: userMessage,
+        timestamp: new Date()
+      }
+      setChatHistory(prev => [...prev, newUserMessage])
+      
+      try {
+        // Call the chat agent API
+        const response = await fetch('/api/chat-agent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            message: userMessage,
+            conversationHistory: chatHistory.map(msg => ({
+              role: msg.role,
+              content: msg.content
+            })),
+            currentBlocks: cells
+          })
+        })
+        
+        if (!response.ok) {
+          throw new Error('Failed to get response')
+        }
+        
+        const data = await response.json()
+        
+        // Add assistant response to history
+        const assistantMessage: ChatMessage = {
+          role: 'assistant',
+          content: data.message,
+          timestamp: new Date(),
+          actions: data.actions,
+          toolCalls: data.toolCalls
+        }
+        setChatHistory(prev => [...prev, assistantMessage])
+        
+        // Execute any actions returned by the agent with typewriter effect
+        if (data.actions && data.actions.length > 0) {
+          executeActionsWithTypewriter(data.actions)
+        }
+        
+      } catch (error) {
+        console.error('Chat error:', error)
+        const errorMessage: ChatMessage = {
+          role: 'assistant',
+          content: 'Sorry, I encountered an error. Please try again.',
+          timestamp: new Date()
+        }
+        setChatHistory(prev => [...prev, errorMessage])
+      } finally {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -80,13 +236,13 @@ export function ChatBar() {
     }
 
     if (isDragging || isResizing) {
-      document.addEventListener('mousemove', handleMouseMove)
-      document.addEventListener('mouseup', handleMouseUp)
+      window.document.addEventListener('mousemove', handleMouseMove)
+      window.document.addEventListener('mouseup', handleMouseUp)
     }
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove)
-      document.removeEventListener('mouseup', handleMouseUp)
+      window.document.removeEventListener('mousemove', handleMouseMove)
+      window.document.removeEventListener('mouseup', handleMouseUp)
     }
   }, [isDragging, isResizing, dragOffset, resizeStart])
 
@@ -218,17 +374,93 @@ export function ChatBar() {
             bottom: position.y + 48,
             left: position.x + 24,
             width: width - 48,
-            height: 200,
+            height: 400,
             background: 'rgba(59, 130, 246, 0.08)',
             backdropFilter: 'blur(20px)',
             border: '1px solid rgba(59, 130, 246, 0.15)',
             borderBottom: 'none',
             borderRadius: '12px 12px 0 0',
-            pointerEvents: 'none',
             animation: 'glass-grow 0.3s ease-out',
-            zIndex: 99
+            zIndex: 99,
+            display: 'flex',
+            flexDirection: 'column'
           }}
-        />
+        >
+          {/* Chat messages */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 12
+          }}>
+            {chatHistory.map((msg, index) => (
+              <div
+                key={index}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start'
+                }}
+              >
+                <div
+                  style={{
+                    maxWidth: '70%',
+                    padding: '8px 12px',
+                    borderRadius: 12,
+                    background: msg.role === 'user' ? '#111827' : '#F3F4F6',
+                    color: msg.role === 'user' ? '#FFFFFF' : '#111827',
+                    fontSize: 13,
+                    lineHeight: 1.5
+                  }}
+                >
+                  {msg.content}
+                </div>
+                {msg.toolCalls && msg.toolCalls.length > 0 && (
+                  <div style={{
+                    marginTop: 6,
+                    padding: '6px 8px',
+                    background: 'rgba(59, 130, 246, 0.1)',
+                    borderRadius: 6,
+                    fontSize: 10,
+                    color: '#3B82F6',
+                    fontFamily: 'JetBrains Mono, ui-monospace, monospace'
+                  }}>
+                    {msg.toolCalls?.map((tool: any, idx: number) => (
+                      <div key={idx} style={{ marginBottom: idx < (msg.toolCalls?.length || 0) - 1 ? 4 : 0 }}>
+                        <div style={{ fontWeight: 600 }}>
+                          🔧 {tool.name}
+                        </div>
+                        <div style={{ 
+                          marginLeft: 16, 
+                          opacity: 0.9,
+                          fontSize: 9,
+                          marginTop: 2
+                        }}>
+                          {JSON.stringify(tool.args, null, 2)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            {isLoading && (
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                color: '#6B7280',
+                fontSize: 12
+              }}>
+                <Loader2 size={12} className="animate-spin" />
+                Thinking...
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
       )}
       
       <style jsx>{`
@@ -238,9 +470,22 @@ export function ChatBar() {
             opacity: 0;
           }
           100% {
-            height: 200px;
+            height: 400px;
             opacity: 1;
           }
+        }
+        
+        @keyframes spin {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
+        }
+        
+        .animate-spin {
+          animation: spin 1s linear infinite;
         }
       `}</style>
     </div>

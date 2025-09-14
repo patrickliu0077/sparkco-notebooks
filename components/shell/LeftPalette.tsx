@@ -528,49 +528,50 @@ export function LeftPalette() {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          gap: '6px'
+          gap: '8px'
         }}>
           {/* User avatar */}
           <div style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '8px',
-            background: 'linear-gradient(135deg, #3B82F6 0%, #1E40AF 100%)',
+            width: '28px',
+            height: '28px',
+            borderRadius: '50%',
+            background: '#F1F5F9',
+            border: '1px solid #E5E7EB',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            color: '#FFFFFF',
-            fontSize: '12px',
-            fontWeight: 600,
-            border: '2px solid #FFFFFF',
-            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)'
+            color: '#6B7280',
+            fontSize: '10px',
+            fontWeight: 500,
+            fontFamily: 'Inter, system-ui, sans-serif'
           }}>
             JD
           </div>
           
           {/* Plan indicator */}
           <div style={{
-            width: '24px',
-            height: '12px',
-            background: '#DBEAFE',
-            borderRadius: '6px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontSize: '8px',
-            fontWeight: 600,
-            color: '#1E40AF',
-            textTransform: 'uppercase',
-            letterSpacing: '0.05em'
+            width: '20px',
+            height: '8px',
+            background: '#E5E7EB',
+            borderRadius: '4px',
+            position: 'relative'
           }}>
-            PRO
+            <div style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              width: '60%',
+              height: '100%',
+              background: '#3B82F6',
+              borderRadius: '4px'
+            }} />
           </div>
           
           {/* Agent count */}
           <div style={{
-            fontSize: '8px',
+            fontSize: '9px',
             color: '#9CA3AF',
-            fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace'
+            fontWeight: 500
           }}>
             12
           </div>
