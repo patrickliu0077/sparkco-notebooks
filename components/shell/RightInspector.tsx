@@ -23,12 +23,59 @@ import {
 
 // Icon maps
 const connectorIcons = {
+  // Core Communication & Productivity
   gmail: Mail,
   slack: MessageSquare,
   notion: FileText,
-  sheets: Table,
+  googlesheets: Table,
+  googledrive: Folder,
+  
+  // Developer & Project Management
+  github: Settings,
+  jira: Settings,
+  linear: Settings,
+  asana: Settings,
+  
+  // CRM & Sales
+  hubspot: Settings,
+  salesforce: Settings,
+  pipedrive: Settings,
+  
+  // Communication & Meetings
+  zoom: Settings,
+  calendly: Settings,
+  googlecalendar: Settings,
+  
+  // Finance & Payments
+  stripe: Settings,
+  quickbooks: Settings,
+  
+  // E-commerce
+  shopify: Settings,
+  
+  // Analytics & Data
+  googleanalytics: Settings,
+  mixpanel: Settings,
+  
+  // Design & Creative
+  figma: Settings,
+  canva: Settings,
+  
+  // Support & Customer Service
+  zendesk: Settings,
+  intercom: MessageSquare,
+  
+  // Marketing
+  mailchimp: Mail,
+  linkedin: Settings,
+  
+  // Custom Connectors
+  'agent-api': Settings,
+  marketplace: Settings,
+  
+  // Generic Fallbacks
   http: Search,
-  files: Folder,
+  webhook: Settings,
   custom: Settings
 }
 
@@ -150,12 +197,58 @@ function TextInput({
 function Select({
   value,
   onChange,
-  options
+  options,
+  grouped = false
 }: {
   value: string
   onChange: (v: string) => void
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; group?: string }[]
+  grouped?: boolean
 }) {
+  if (grouped) {
+    const groupedOptions = options.reduce((acc, option) => {
+      const group = option.group || 'Other'
+      if (!acc[group]) acc[group] = []
+      acc[group].push(option)
+      return acc
+    }, {} as Record<string, typeof options>)
+
+    return (
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        style={{
+          width: '100%',
+          fontSize: 13,
+          padding: '8px 10px',
+          border: '1px solid #E5E7EB',
+          borderRadius: 8,
+          background: '#FFFFFF',
+          outline: 'none',
+          cursor: 'pointer'
+        }}
+        onFocus={(e) => {
+          e.currentTarget.style.borderColor = '#3B82F6'
+          ;(e.currentTarget as HTMLSelectElement).style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)'
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = '#E5E7EB'
+          ;(e.currentTarget as HTMLSelectElement).style.boxShadow = 'none'
+        }}
+      >
+        {Object.entries(groupedOptions).map(([group, groupOptions]) => (
+          <optgroup key={group} label={group}>
+            {groupOptions.map((op) => (
+              <option key={op.value} value={op.value}>
+                {op.label}
+              </option>
+            ))}
+          </optgroup>
+        ))}
+      </select>
+    )
+  }
+
   return (
     <select
       value={value}
@@ -167,7 +260,8 @@ function Select({
         border: '1px solid #E5E7EB',
         borderRadius: 8,
         background: '#FFFFFF',
-        outline: 'none'
+        outline: 'none',
+        cursor: 'pointer'
       }}
       onFocus={(e) => {
         e.currentTarget.style.borderColor = '#3B82F6'
@@ -194,10 +288,10 @@ function PromptInspector({ cell }: { cell: PromptCell }) {
   return (
     <div>
       <Field label="Name">
-        <TextInput value={cell.name || ''} onChange={(v) => patch({ name: v })} placeholder="Prompt name..." />
+        <TextInput value={cell.name || ''} onChange={(v) => patch({ name: v })} placeholder="Instructions name..." />
       </Field>
-      <Field label="Content" description="The prompt text that will be used">
-        <TextInput value={cell.content} onChange={(v) => patch({ content: v })} placeholder="Enter your prompt..." multiline rows={6} />
+      <Field label="Content" description="The instructions text that will be used">
+        <TextInput value={cell.content} onChange={(v) => patch({ content: v })} placeholder="Enter your instructions..." multiline rows={6} />
       </Field>
       <Field label="Tags" description="Comma-separated tags for organization">
         <TextInput
@@ -221,12 +315,59 @@ function ConnectorInspector({ cell }: { cell: ConnectorCell }) {
   const patch = (u: Partial<ConnectorCell>) => updateCell(cell.id, u)
 
   const connectorOptions = [
+    // Core Communication & Productivity (Composio)
     { value: 'gmail', label: 'Gmail' },
     { value: 'slack', label: 'Slack' },
     { value: 'notion', label: 'Notion' },
-    { value: 'sheets', label: 'Google Sheets' },
+    { value: 'googlesheets', label: 'Google Sheets' },
+    { value: 'googledrive', label: 'Google Drive' },
+    
+    // Developer & Project Management (Composio)
+    { value: 'github', label: 'GitHub' },
+    { value: 'jira', label: 'Jira' },
+    { value: 'linear', label: 'Linear' },
+    { value: 'asana', label: 'Asana' },
+    
+    // CRM & Sales (Composio)
+    { value: 'hubspot', label: 'HubSpot' },
+    { value: 'salesforce', label: 'Salesforce' },
+    { value: 'pipedrive', label: 'Pipedrive' },
+    
+    // Communication & Meetings (Composio)
+    { value: 'zoom', label: 'Zoom' },
+    { value: 'calendly', label: 'Calendly' },
+    { value: 'googlecalendar', label: 'Google Calendar' },
+    
+    // Finance & Payments (Composio)
+    { value: 'stripe', label: 'Stripe' },
+    { value: 'quickbooks', label: 'QuickBooks' },
+    
+    // E-commerce (Composio)
+    { value: 'shopify', label: 'Shopify' },
+    
+    // Analytics & Data (Composio)
+    { value: 'googleanalytics', label: 'Google Analytics' },
+    { value: 'mixpanel', label: 'Mixpanel' },
+    
+    // Design & Creative (Composio)
+    { value: 'figma', label: 'Figma' },
+    { value: 'canva', label: 'Canva' },
+    
+    // Support & Customer Service (Composio)
+    { value: 'zendesk', label: 'Zendesk' },
+    { value: 'intercom', label: 'Intercom' },
+    
+    // Marketing (Composio)
+    { value: 'mailchimp', label: 'Mailchimp' },
+    { value: 'linkedin', label: 'LinkedIn' },
+    
+    // Custom Connectors
+    { value: 'agent-api', label: 'Agent API' },
+    { value: 'marketplace', label: 'Marketplace' },
+    
+    // Generic Fallbacks
     { value: 'http', label: 'HTTP API' },
-    { value: 'files', label: 'Files' },
+    { value: 'webhook', label: 'Webhook' },
     { value: 'custom', label: 'Custom' }
   ]
 
@@ -236,7 +377,20 @@ function ConnectorInspector({ cell }: { cell: ConnectorCell }) {
         <TextInput value={cell.name || ''} onChange={(v) => patch({ name: v })} placeholder="Connector name..." />
       </Field>
       <Field label="Connector Type">
-        <Select value={cell.connector} onChange={(v) => patch({ connector: v as any })} options={connectorOptions} />
+        <Select value={cell.connector} onChange={(v) => patch({ connector: v as any })} options={connectorOptions.map(opt => ({
+          ...opt,
+          group: opt.value === 'gmail' || opt.value === 'slack' || opt.value === 'notion' || opt.value === 'googlesheets' || opt.value === 'googledrive' ? 'Communication & Productivity' :
+                 opt.value === 'github' || opt.value === 'jira' || opt.value === 'linear' || opt.value === 'asana' ? 'Developer & Project Management' :
+                 opt.value === 'hubspot' || opt.value === 'salesforce' || opt.value === 'pipedrive' ? 'CRM & Sales' :
+                 opt.value === 'zoom' || opt.value === 'calendly' || opt.value === 'googlecalendar' ? 'Meetings & Scheduling' :
+                 opt.value === 'stripe' || opt.value === 'quickbooks' ? 'Finance & Payments' :
+                 opt.value === 'shopify' ? 'E-commerce' :
+                 opt.value === 'googleanalytics' || opt.value === 'mixpanel' ? 'Analytics & Data' :
+                 opt.value === 'figma' || opt.value === 'canva' ? 'Design & Creative' :
+                 opt.value === 'zendesk' || opt.value === 'intercom' ? 'Support & Customer Service' :
+                 opt.value === 'mailchimp' || opt.value === 'linkedin' ? 'Marketing & Social Media' :
+                 opt.value === 'agent-api' || opt.value === 'marketplace' ? 'Custom Connectors' : 'Generic'
+        }))} grouped={true} />
       </Field>
       <Field label="Description">
         <TextInput value={cell.description || ''} onChange={(v) => patch({ description: v })} placeholder="What does this connector do?" multiline rows={2} />
@@ -441,7 +595,7 @@ export function RightInspector() {
           </div>
           <div style={{ minWidth: 0, flex: 1 }}>
             <p style={{ fontSize: 14, fontWeight: 600, color: '#0F172A', margin: 0, textTransform: 'capitalize' }}>
-              {selectedCell.kind} Cell
+              {selectedCell.kind === 'prompt' ? 'Instructions' : selectedCell.kind} Cell
             </p>
             <p style={{ fontSize: 12, color: '#64748B', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {selectedCell.name || `Untitled ${selectedCell.kind}`}

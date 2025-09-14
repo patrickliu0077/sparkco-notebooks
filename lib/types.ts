@@ -27,15 +27,47 @@ export interface ConnectorCell extends BaseCell {
 }
 
 export type ConnectorType = 
+  // Core Communication & Productivity (Composio)
   | 'gmail' 
   | 'slack' 
   | 'notion' 
-  | 'sheets' 
-  | 'http' 
-  | 'files'
+  | 'googlesheets'
+  | 'googledrive'
+  // Developer & Project Management (Composio)
+  | 'github'
+  | 'jira'
+  | 'linear'
+  | 'asana'
+  // CRM & Sales (Composio)
+  | 'hubspot'
+  | 'salesforce'
+  | 'pipedrive'
+  // Communication & Meetings (Composio)
+  | 'zoom'
+  | 'calendly'
+  | 'googlecalendar'
+  // Finance & Payments (Composio)
+  | 'stripe'
+  | 'quickbooks'
+  // E-commerce (Composio)
+  | 'shopify'
+  // Analytics & Data (Composio)
+  | 'googleanalytics'
+  | 'mixpanel'
+  // Design & Creative (Composio)
+  | 'figma'
+  | 'canva'
+  // Support & Customer Service (Composio)
+  | 'zendesk'
+  | 'intercom'
+  // Marketing (Composio)
+  | 'mailchimp'
+  | 'linkedin'
+  // Custom Connectors
   | 'agent-api'
-  | 'payment'
   | 'marketplace'
+  // Generic Fallbacks
+  | 'http' 
   | 'webhook'
   | 'custom';
 

@@ -81,7 +81,7 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
           }}
         >
           <Plus size={8} style={{ marginRight: 2 }} />
-          Prompt
+          Instructions
         </button>
         <button 
           onClick={() => onAdd('connector')} 
@@ -109,33 +109,6 @@ function AddCellButton({ onAdd }: AddCellButtonProps) {
         >
           <Plus size={8} style={{ marginRight: 2 }} />
           Connector
-        </button>
-        <button 
-          onClick={() => onAdd('node')} 
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            fontSize: 10,
-            fontWeight: 500,
-            padding: '2px 6px',
-            borderRadius: 3,
-            border: 'none',
-            background: 'transparent',
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-            color: '#9CA3AF'
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#F9FAFB'
-            e.currentTarget.style.color = '#6B7280'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#9CA3AF'
-          }}
-        >
-          <Plus size={8} style={{ marginRight: 2 }} />
-          Node
         </button>
       </div>
     </div>
@@ -173,7 +146,7 @@ function EmptyState() {
             lineHeight: 1.5,
             margin: 0
           }}>
-            Build workflows with prompts, connectors, and nodes.
+            Build AI agents with prompts and connectors.
           </p>
         </div>
 
@@ -203,7 +176,7 @@ function EmptyState() {
               e.currentTarget.style.background = '#FFFFFF'
             }}
           >
-            Add Prompt
+            Add Instructions
           </button>
           
           <button
@@ -231,33 +204,6 @@ function EmptyState() {
             }}
           >
             Add Connector
-          </button>
-          
-          <button
-            onClick={() => addCell('node')}
-            style={{
-              width: '100%',
-              textAlign: 'left',
-              padding: '16px 20px',
-              borderRadius: 8,
-              border: '1px solid #E5E7EB',
-              background: '#FFFFFF',
-              color: '#111827',
-              fontWeight: 500,
-              fontSize: 15,
-              cursor: 'pointer',
-              transition: 'all 0.15s ease'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = '#D1D5DB'
-              e.currentTarget.style.background = '#F9FAFB'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = '#E5E7EB'
-              e.currentTarget.style.background = '#FFFFFF'
-            }}
-          >
-            Add Node
           </button>
         </div>
       </div>
@@ -355,8 +301,8 @@ export function Notebook() {
     )
   }
 
-  const handleAddCell = (kind: CellKind, atIndex?: number) => {
-    addCell(kind, atIndex)
+  const handleAddCell = (kind: CellKind) => {
+    addCell(kind)
   }
 
   if (cells.length === 0) {
@@ -371,52 +317,260 @@ export function Notebook() {
     )
   }
 
+  // Separate cells by type
+  const connectorCells = cells.filter(cell => cell.kind === 'connector')
+  const promptCells = cells.filter(cell => cell.kind === 'prompt')
+  const nodeCells = cells.filter(cell => cell.kind === 'node')
+
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, overflow: 'auto' }}>
-          <div 
-            style={{ maxWidth: 920, margin: '0 auto', padding: 24 }}
-            onClick={(e) => {
-              // If clicking on empty space (not a cell), deselect
-              if (e.target === e.currentTarget) {
-                selectCell(null)
-              }
-            }}
-          >
-          {/* Add cell button at the top */}
-          <AddCellButton onAdd={(kind) => handleAddCell(kind, 0)} />
+      <div style={{ flex: 1, overflow: 'auto', paddingBottom: '280px' }}>
+        <div 
+          style={{ maxWidth: 920, margin: '0 auto', padding: 24 }}
+          onClick={(e) => {
+            // If clicking on empty space (not a cell), deselect
+            if (e.target === e.currentTarget) {
+              selectCell(null)
+            }
+          }}
+        >
+          {/* Connectors Container - Top Row */}
+          {connectorCells.length > 0 && (
+            <div style={{ 
+              display: 'flex', 
+              flexWrap: 'wrap', 
+              gap: 12, 
+              marginBottom: 24,
+              padding: 16,
+              background: '#F9FAFB',
+              borderRadius: '0 0 8px 8px',
+              border: '1px solid #E5E7EB',
+              borderTop: 'none',
+              marginLeft: -24,
+              marginRight: -24,
+              marginTop: -24
+            }}>
+              {connectorCells.map((cell) => {
+                const isSelected = selectedCellId === cell.id
+                return (
+                  <div key={cell.id} style={{ position: 'relative' }}>
+                    <ConnectorCellView
+                      // @ts-ignore - narrow by kind
+                      cell={cell as any}
+                      isSelected={isSelected}
+                      onSelect={() => selectCell(cell.id)}
+                    />
+                    <button
+                      onClick={() => handleAddCell('connector')}
+                      style={{
+                        position: 'absolute',
+                        bottom: -6,
+                        right: -6,
+                        width: 20,
+                        height: 20,
+                        borderRadius: '50%',
+                        border: '1px solid #E5E7EB',
+                        background: '#FFFFFF',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        fontSize: 12,
+                        color: '#6B7280',
+                        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = '#F3F4F6'
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = '#FFFFFF'
+                      }}
+                    >
+                      +
+                    </button>
+                  </div>
+                )
+              })}
+              {/* Add first connector button if no connectors exist */}
+              {connectorCells.length === 0 && (
+                <button
+                  onClick={() => handleAddCell('connector')}
+                  style={{
+                    width: 120,
+                    height: 80,
+                    border: '2px dashed #D1D5DB',
+                    borderRadius: 8,
+                    background: 'transparent',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    color: '#9CA3AF',
+                    fontSize: 12,
+                    fontWeight: 500
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = '#9CA3AF'
+                    e.currentTarget.style.color = '#6B7280'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = '#D1D5DB'
+                    e.currentTarget.style.color = '#9CA3AF'
+                  }}
+                >
+                  + Connector
+                </button>
+              )}
+            </div>
+          )}
 
-          {/* Render cells */}
-          {cells.map((cell, index) => {
+          {/* Add connectors section if none exist */}
+          {connectorCells.length === 0 && (
+            <div style={{ 
+              display: 'flex', 
+              gap: 12, 
+              marginBottom: 24,
+              padding: 16,
+              background: '#F9FAFB',
+              borderRadius: '0 0 8px 8px',
+              border: '1px solid #E5E7EB',
+              borderTop: 'none',
+              marginLeft: -24,
+              marginRight: -24,
+              marginTop: -24
+            }}>
+              <button
+                onClick={() => handleAddCell('connector')}
+                style={{
+                  width: 120,
+                  height: 80,
+                  border: '2px dashed #D1D5DB',
+                  borderRadius: 8,
+                  background: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#9CA3AF',
+                  fontSize: 12,
+                  fontWeight: 500
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#9CA3AF'
+                  e.currentTarget.style.color = '#6B7280'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#D1D5DB'
+                  e.currentTarget.style.color = '#9CA3AF'
+                }}
+              >
+                + Connector
+              </button>
+            </div>
+          )}
+
+          {/* Prompt Cells */}
+          {promptCells.map((cell) => {
             const isSelected = selectedCellId === cell.id
             return (
-              <div key={cell.id} style={{ marginBottom: 4 }}>
-                {cell.kind === 'prompt' && (
-                  <PromptCellView
-                    // @ts-ignore - component expects PromptCell which this is when kind==='prompt'
-                    cell={cell as any}
-                    isSelected={isSelected}
-                    onSelect={() => selectCell(cell.id)}
-                  />
-                )}
-                {cell.kind === 'connector' && (
-                  <ConnectorCellView
-                    // @ts-ignore - narrow by kind
-                    cell={cell as any}
-                    isSelected={isSelected}
-                    onSelect={() => selectCell(cell.id)}
-                  />
-                )}
-                {cell.kind === 'node' && (
-                  <NodeCellView
-                    // @ts-ignore - narrow by kind
-                    cell={cell as any}
-                    isSelected={isSelected}
-                    onSelect={() => selectCell(cell.id)}
-                  />
-                )}
-                {/* Add cell button between cells */}
-                <AddCellButton onAdd={(kind) => handleAddCell(kind, index + 1)} />
+              <div key={cell.id} style={{ marginBottom: 16, position: 'relative' }}>
+                <PromptCellView
+                  // @ts-ignore - component expects PromptCell which this is when kind==='prompt'
+                  cell={cell as any}
+                  isSelected={isSelected}
+                  onSelect={() => selectCell(cell.id)}
+                />
+                <button
+                  onClick={() => handleAddCell('prompt')}
+                  style={{
+                    position: 'absolute',
+                    bottom: -6,
+                    right: -6,
+                    width: 20,
+                    height: 20,
+                    borderRadius: '50%',
+                    border: '1px solid #E5E7EB',
+                    background: '#FFFFFF',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    fontSize: 12,
+                    color: '#6B7280',
+                    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = '#F3F4F6'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = '#FFFFFF'
+                  }}
+                >
+                  +
+                </button>
+              </div>
+            )
+          })}
+
+          {/* Add first prompt if none exist */}
+          {promptCells.length === 0 && (
+            <div style={{ marginBottom: 16 }}>
+              <button
+                onClick={() => handleAddCell('prompt')}
+                style={{
+                  width: '100%',
+                  height: 120,
+                  border: '2px dashed #D1D5DB',
+                  borderRadius: 8,
+                  background: 'transparent',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#9CA3AF',
+                  fontSize: 14,
+                  fontWeight: 500
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.borderColor = '#9CA3AF'
+                  e.currentTarget.style.color = '#6B7280'
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.borderColor = '#D1D5DB'
+                  e.currentTarget.style.color = '#9CA3AF'
+                }}
+              >
+                + Add Instructions
+              </button>
+            </div>
+          )}
+
+          {/* Node Cells (deprecated) */}
+          {nodeCells.map((cell) => {
+            const isSelected = selectedCellId === cell.id
+            return (
+              <div key={cell.id} style={{ marginBottom: 16, position: 'relative' }}>
+                <div style={{
+                  position: 'absolute',
+                  top: -8,
+                  right: -8,
+                  background: '#FEF3C7',
+                  border: '1px solid #F59E0B',
+                  borderRadius: 4,
+                  padding: '2px 6px',
+                  fontSize: 10,
+                  fontWeight: 500,
+                  color: '#92400E',
+                  zIndex: 10
+                }}>
+                  DEPRECATED
+                </div>
+                <NodeCellView
+                  // @ts-ignore - narrow by kind
+                  cell={cell as any}
+                  isSelected={isSelected}
+                  onSelect={() => selectCell(cell.id)}
+                />
               </div>
             )
           })}

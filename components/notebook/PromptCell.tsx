@@ -22,7 +22,7 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
     extensions: [
       StarterKit,
       Placeholder.configure({
-        placeholder: 'Describe what you want your agent to do...',
+        placeholder: 'Write instructions for what you want your agent to do...',
       }),
     ],
     content: cell.content,
@@ -61,54 +61,74 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
 
       
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <div
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 4,
-            background: '#F1F5F9',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <MessageCircle size={12} color="#111827" />
-        </div>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 500, color: '#0F172A', lineHeight: 1.2, fontSize: 14 }}>
-            {cell.name?.trim() || 'Prompt'}
+      <div style={{ marginBottom: 6 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+          <div
+            style={{
+              width: 20,
+              height: 20,
+              borderRadius: 4,
+              background: '#F1F5F9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+            }}
+          >
+            <MessageCircle size={12} color="#111827" />
           </div>
-        </div>
-        {cell.tags && cell.tags.length > 0 ? (
-          <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-            {cell.tags.slice(0, 2).map((tag) => (
-              <span
-                key={tag}
-                style={{
-                  fontSize: 9,
-                  padding: '1px 3px',
-                  borderRadius: 2,
-                  border: '1px solid #E5E7EB',
-                  background: '#FFFFFF',
-                  color: '#6B7280',
-                  fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
-                  textTransform: 'lowercase'
-                }}
-              >
-                {tag.toLowerCase()}
-              </span>
-            ))}
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ fontWeight: 500, color: '#0F172A', lineHeight: 1.2, fontSize: 14 }}>
+              {cell.name?.trim() || 'Instructions'}
+            </div>
           </div>
-        ) : null}
+          {cell.tags && cell.tags.length > 0 ? (
+            <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
+              {cell.tags.slice(0, 2).map((tag) => (
+                <span
+                  key={tag}
+                  style={{
+                    fontSize: 9,
+                    padding: '1px 3px',
+                    borderRadius: 2,
+                    border: '1px solid #E5E7EB',
+                    background: '#FFFFFF',
+                    color: '#6B7280',
+                    fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
+                    textTransform: 'lowercase'
+                  }}
+                >
+                  {tag.toLowerCase()}
+                </span>
+              ))}
+            </div>
+          ) : null}
+        </div>
+        
+        {/* Note in header */}
+        {cell.note && (
+          <div
+            style={{
+              fontSize: 11,
+              color: '#64748B',
+              background: '#F9FAFB',
+              border: '1px solid #E5E7EB',
+              borderRadius: 4,
+              padding: '4px 6px',
+              marginTop: 4,
+            }}
+          >
+            {cell.note}
+          </div>
+        )}
       </div>
 
       {/* Editor */}
       <div
         style={{
           minHeight: 120,
-          border: '1px solid #E5E7EB',
+          border: '1px',
+
           borderRadius: 8,
           background: '#FFFFFF',
           padding: 10,
@@ -117,22 +137,8 @@ export function PromptCell({ cell, isSelected, onSelect }: PromptCellProps) {
         <EditorContent editor={editor} />
       </div>
 
-      {/* Note */}
-      {cell.note ? (
-        <div
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            color: '#64748B',
-            background: '#F9FAFB',
-            border: '1px solid #E5E7EB',
-            borderRadius: 8,
-            padding: 8,
-          }}
-        >
-          {cell.note}
-        </div>
-      ) : null}
+
     </div>
   )
 }
+

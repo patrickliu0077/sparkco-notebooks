@@ -1,9 +1,16 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import { Send, GripHorizontal } from 'lucide-react'
 
 export function ChatBar() {
+  const pathname = usePathname()
+  
+  // Hide on interact page
+  if (pathname === '/interact') {
+    return null
+  }
   const [message, setMessage] = useState('')
   const [width, setWidth] = useState(600)
   const [position, setPosition] = useState({ x: 561.5, y: 20 })
@@ -208,14 +215,15 @@ export function ChatBar() {
         <div
           style={{
             position: 'fixed',
-            bottom: position.y + 60,
-            left: position.x,
-            width: width,
+            bottom: position.y + 48,
+            left: position.x + 24,
+            width: width - 48,
             height: 200,
-            background: 'rgba(255, 255, 255, 0.05)',
+            background: 'rgba(59, 130, 246, 0.08)',
             backdropFilter: 'blur(20px)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            borderRadius: 12,
+            border: '1px solid rgba(59, 130, 246, 0.15)',
+            borderBottom: 'none',
+            borderRadius: '12px 12px 0 0',
             pointerEvents: 'none',
             animation: 'glass-grow 0.3s ease-out',
             zIndex: 99

@@ -1,5 +1,7 @@
+
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { usePathname } from "next/navigation";
 import "./globals.css";
 import { TopNav } from "@/components/shell/TopNav";
 import { LeftPalette } from "@/components/shell/LeftPalette";

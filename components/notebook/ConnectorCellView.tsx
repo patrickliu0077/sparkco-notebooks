@@ -1,15 +1,83 @@
 'use client'
 
-import { Mail, MessageSquare, FileText, Table, Globe, Folder, Settings } from 'lucide-react'
+import { 
+  Mail, 
+  MessageSquare, 
+  FileText, 
+  Table, 
+  Globe, 
+  Folder, 
+  Settings,
+  Bot,
+  CreditCard,
+  Store,
+  Webhook,
+  Users,
+  Calendar,
+  Video,
+  BarChart3,
+  Palette,
+  HeadphonesIcon,
+  TrendingUp,
+  ShoppingCart,
+  Building2
+} from 'lucide-react'
 import type { ConnectorCell } from '@/lib/types'
 
 const connectorIconMap = {
+  // Core Communication & Productivity
   gmail: Mail,
   slack: MessageSquare,
   notion: FileText,
-  sheets: Table,
+  googlesheets: Table,
+  googledrive: Folder,
+  
+  // Developer & Project Management
+  github: Settings,
+  jira: Settings,
+  linear: Settings,
+  asana: Settings,
+  
+  // CRM & Sales
+  hubspot: Building2,
+  salesforce: Building2,
+  pipedrive: TrendingUp,
+  
+  // Communication & Meetings
+  zoom: Video,
+  calendly: Calendar,
+  googlecalendar: Calendar,
+  
+  // Finance & Payments
+  stripe: CreditCard,
+  quickbooks: Settings,
+  
+  // E-commerce
+  shopify: ShoppingCart,
+  
+  // Analytics & Data
+  googleanalytics: BarChart3,
+  mixpanel: BarChart3,
+  
+  // Design & Creative
+  figma: Palette,
+  canva: Palette,
+  
+  // Support & Customer Service
+  zendesk: HeadphonesIcon,
+  intercom: MessageSquare,
+  
+  // Marketing
+  mailchimp: Mail,
+  linkedin: Users,
+  
+  // Custom Connectors
+  'agent-api': Bot,
+  marketplace: Store,
+  
+  // Generic Fallbacks
   http: Globe,
-  files: Folder,
+  webhook: Webhook,
   custom: Settings,
 } as const
 
@@ -27,8 +95,10 @@ export function ConnectorCellView({ cell, isSelected, onSelect }: Props) {
     <div
       onClick={onSelect}
       style={{
-        padding: 12,
-        borderRadius: 4,
+        width: 120,
+        height: 90,
+        padding: '8px 8px 12px 8px',
+        borderRadius: 8,
         border: `1px solid ${isSelected ? '#8B5CF6' : '#E5E7EB'}`,
         background: '#FFFFFF',
         transition: 'all .15s ease',
@@ -36,117 +106,77 @@ export function ConnectorCellView({ cell, isSelected, onSelect }: Props) {
           ? '0 0 0 3px rgba(139, 92, 246, 0.1)'
           : 'none',
         cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
       {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-        <div
-          style={{
-            width: 20,
-            height: 20,
-            borderRadius: 4,
-            background: '#F1F5F9',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <Icon size={12} color="#111827" />
-        </div>
-        <div style={{ minWidth: 0 }}>
-          <div style={{ fontWeight: 500, color: '#0F172A', lineHeight: 1.2, fontSize: 14 }}>
-            {cell.name?.trim() || 'Connector'}
+      <div style={{ marginBottom: 4 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 4 }}>
+          <div
+            style={{
+              width: 24,
+              height: 24,
+              borderRadius: 6,
+              background: '#F1F5F9',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Icon size={14} color="#111827" />
           </div>
         </div>
-        <div style={{ fontSize: 10, color: '#9CA3AF', fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace', textTransform: 'lowercase' }}>
-          {cell.connector}
+
+        {/* Name */}
+        <div style={{ 
+          textAlign: 'center',
+          fontSize: 11,
+          fontWeight: 500,
+          color: '#0F172A',
+          lineHeight: 1.2,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          marginBottom: 2
+        }}>
+          {cell.name?.trim() || cell.connector}
+        </div>
+
+        {/* Note in header */}
+        {cell.note && (
+          <div
+            style={{
+              fontSize: 8,
+              color: '#64748B',
+              background: '#F9FAFB',
+              border: '1px solid #E5E7EB',
+              borderRadius: 3,
+              padding: '2px 4px',
+              marginBottom: 2,
+              textAlign: 'center',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap'
+            }}
+          >
+            {cell.note}
+          </div>
+        )}
+
+        {/* Status indicator */}
+        <div style={{ 
+          textAlign: 'center',
+          fontSize: 8,
+          color: entries.length > 0 ? '#10B981' : '#9CA3AF',
+          fontWeight: 500,
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em'
+        }}>
+          {entries.length > 0 ? 'Configured' : 'Setup needed'}
         </div>
       </div>
-
-      {/* Description */}
-      {cell.description ? (
-        <div
-          style={{
-            fontSize: 13,
-            color: '#475569',
-            marginBottom: 10,
-          }}
-        >
-          {cell.description}
-        </div>
-      ) : null}
-
-      {/* Config */}
-      {entries.length > 0 ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: 8,
-          }}
-        >
-          {entries.slice(0, 6).map(([k, v]) => (
-            <div
-              key={k}
-              style={{
-                border: '1px solid #E5E7EB',
-                borderRadius: 8,
-                padding: '8px 10px',
-                background: '#FFFFFF',
-              }}
-            >
-              <div style={{ fontSize: 9, color: '#9CA3AF', marginBottom: 2, fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace', textTransform: 'lowercase' }}>
-                {k}
-              </div>
-              <div
-                style={{
-                  fontSize: 11,
-                  color: '#374151',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  fontFamily: 'JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, monospace',
-                }}
-                title={v}
-              >
-                {v || '—'}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div
-          style={{
-            fontSize: 12,
-            color: '#9CA3AF',
-            border: '1px dashed #E5E7EB',
-            background: '#F9FAFB',
-            padding: 10,
-            borderRadius: 8,
-            textAlign: 'center',
-          }}
-        >
-          No configuration yet. Add fields in the Inspector →
-        </div>
-      )}
-
-      {/* Note */}
-      {cell.note ? (
-        <div
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            color: '#64748B',
-            background: '#F9FAFB',
-            border: '1px solid #E5E7EB',
-            borderRadius: 8,
-            padding: 8,
-          }}
-        >
-          {cell.note}
-        </div>
-      ) : null}
     </div>
   )
 }

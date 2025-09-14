@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { useAgentStore, useDocument } from "@/lib/store"
 import { downloadJSON } from "@/lib/utils"
@@ -18,10 +19,12 @@ import {
   Crown,
   Diamond,
   Star,
-  ChevronDown
+  ChevronDown,
+  Settings
 } from "lucide-react"
 
 export function TopNav() {
+  const pathname = usePathname()
   const document = useDocument()
   const [showIconPicker, setShowIconPicker] = useState(false)
   const { 
@@ -212,43 +215,30 @@ export function TopNav() {
 
         {/* Right section */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <button
-            onClick={toggleGraphView}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              border: '1px solid #E5E7EB',
-              background: 'white',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500
-            }}
-          >
-            <GitBranch size={14} />
-            {isGraphViewOpen ? 'Hide Graph' : 'View Graph'}
-          </button>
-          
-          <button
-            onClick={handleExport}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '6px 12px',
-              borderRadius: '6px',
-              border: '1px solid #E5E7EB',
-              background: 'white',
-              cursor: 'pointer',
-              fontSize: '13px',
-              fontWeight: 500
-            }}
-          >
-            <Download size={14} />
-            Export
-          </button>
+          {pathname === '/interact' ? (
+            <button
+              onClick={() => {
+                // Navigate back to agent creation page
+                window.location.href = '/'
+              }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '6px 12px',
+                borderRadius: '6px',
+                border: '1px solid #3B82F6',
+                background: '#3B82F6',
+                color: '#FFFFFF',
+                cursor: 'pointer',
+                fontSize: '13px',
+                fontWeight: 500
+              }}
+            >
+              <Settings size={14} />
+              Manage Agent
+            </button>
+          ) : null}
           
           <button
             onClick={handleShare}
